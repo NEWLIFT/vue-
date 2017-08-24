@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Document</title>
+</head>
+<body>
+	<!---
+		项目创建
+		
+		 1.npm install -g vue-cli
+		 
+		 2.vue init webpack vue-project
+		 
+		 3.cd vue-project
+		 
+		 4.npm install
+		 
+		 5.npm dev run
+		 
+		 6.npm install vuex axios -D
+		 
+		 7.npm install style-loader css-loader -D
+		 
+		 8.npm dev run
+		
+		 划分结构
+		
+		 //静态资源放置到   static中  可以用  link 引入
+		 //conmponents  是放置组件的
+		 //建立文件就可以
+		//公共文件 css  或者js  可以用   require("路径")   主要都放置在  main.js  是全局引入  模块中
+		//也可以用  @import 引用   @import "路径"; css样式   在style标签中引入
+		
+		
+		app.vue 中文件
+		       
+		<template>
+			<div id="app">
+				<NavView></NavView>//这个是组件   需要在 components 中建立 响应的文件  Nav.vue
+			</div>
+		</template>
+		
+
+		
+		<script>
+			
+		import NavView from './components/Nav.vue' //引入的组件
+		
+		
+		export default{  //导出
+			mounted(){//这个函数是页面加载完毕后 进行的操作  一上来  就进行执行的
+			   this.silder();	
+			},
+			methods:{//事件
+				silider(){
+					....
+				}
+			},
+			components:{//组件
+				NavView
+			}
+		}
+		</script>
+		<style>
+			
+			@import './static/css/文件名';   这就是个文件路径
+			
+		</style>
+		
+		
+		
+		路由
+		
+	     router-link 中默认生成一个a标签
+		   
+		   如果想生成li  那么在tag里边加上li
+		   
+		   
+		   
+		 <router-link tag="li"  to="/home" class="" >   //to 是到达的组件 这是在　ｒｏｕｔｅｒ中配置的
+		 	
+		 	<a href="javascript:;">	shouye</a>
+		 	
+		 </router-link>  
+		
+		//使用路由  
+		
+		必须在main.js中引入路由
+		
+		import routerconfig from ./routerconfig.js   这个是自己创建的路由配置文件　　和main.js是同级文件
+		
+		
+		import  VueRouter  from  'vue-router'
+		
+		
+		使用路由
+		
+		Vue.use(VueRouter);
+		
+		//把router 挂载到ａｐｐ上
+		const  router=new VueRouter({
+			  scrollBehavior:()=>({y:0}),//目的是让滚动条归0
+			  routes:routerconfig  //把上边的路由传到这里
+		})
+		
+		routerconfig.js中的文件
+		
+		导进关联的 组件
+		
+		import Home from './components/Home.vue'
+		
+		导出 的是一个数组
+		 
+		 export default [
+		 		{
+		 			path:"/home"
+		 		    component:Home  //这是把组件和这个路径关联在一块	  因为关联所以需要之前把这些组件导入竟来
+		 		},
+		 		{
+		 			path:"/"
+		 		 	 ｒｅｄｉｒｅｃｔ:Home  //根目录　　跳转ｈｏｍｅ组件　　路由重定向
+		 		}
+		 		
+		 ]
+		
+		
+		
+		new Vue({
+			router,
+		    el:"#app"
+		    ....
+		})
+		
+		
+	    watch  是监听事件
+	           这是在  app.vue  中的
+	           
+	    export default{
+	    	watch:{//监听路由变化的
+	    		$route(to,from){  //路由变化
+	    			//to 是到达那个组件了
+	    			//to.path 是路径
+	    			if(to.path=="/user-info"){//当　这个路径是　ｕｓｅｒ－ｉｎｆｏ的时候 我们通知acticons
+	    				this.$store.dispatch('showheader');//这就是我们通知 actions   这里边的传入的参数就是
+	    				//actions中函数名
+	    				
+	    			}
+	    		}
+	    	},
+	    	components:{
+	    		NavView,
+	    		FooterView
+	    	}
+	    }
+		
+		
+		交互
+		
+		  axios
+		  
+		 也可以用原生的也行
+		 
+		 import axios from 'axios';
+		 
+		 // axios 的配置
+		 
+		 
+		 axios.intercetors.request.use(function(config)){
+		 	//配置发送的请求
+		 	//当发送请求的时候才会触发事件
+		 	store.dispatch("")
+		 	return config;
+		 },function(error){
+		 	
+		 	return Promise.reject(error);
+		 }
+		 
+		  axios.intercetors.response.use(function(config)){
+		 	//配置请求回来 
+		 	//当发送请求的时候才会触发事件
+		 	store.dispatch("这里边的不同")  用他来控制  显示和不显示
+		 	return config;
+		 },function(error){
+		 	
+		 	return Promise.reject(error);
+		 }
+		 
+		 
+		 axios.defaults.baseURL="http://localhost:8082/"  配置的请求的根路径
+		 axios.defaults.headers.post['content-Type']="application/x-www-form-urlencoded;" 
+		 //设置ｐｏｓｔ头部信息
+		 
+		 //获取数据
+		 
+		 在Home组件中获取数据
+		 
+		 在main.js  中加入
+		 
+		 Vue.prototype.$http=axios; //吧axios 对象挂载到vue的原型上
+		 
+		 
+		 
+		 HOme组件中 数据
+		 
+		 
+		   export default{
+		   	      mouted(){
+		   	      	this.fetchdata();
+		   	      },
+		   	      methods:{
+		   	      	fetchdata(){
+		   	      		var _this=this;
+		   	      		//数据会存储在
+		   	      		this.$http.get('路径',{a}//参数).then(function(res){
+		   	      			_this.arrList=res.data;
+		   	      		}).catch(function(err){});
+		   	      	}
+		   	      },
+		   	      data(){
+		   	      	return {
+		   	      		arrList:[]
+		   	      	}
+		   	      }
+		   }
+		 
+		 
+		 在 router-view  加上  
+		 <keep-alive>
+		 	<router-alive></router-alive>
+		 </keep-alive>
+		这就不会重复加载了 
+		
+		
+		
+		子路由
+		
+		<router-alive :to="/artcle"+item.id>
+			<h2>mmmmmm</h2>
+		</router-alive>
+		
+		import artcle from 'artcle';
+		export default [
+		 		{
+		 			path:"/home"
+		 		    component:Home  //这是把组件和这个路径关联在一块	  因为关联所以需要之前把这些组件导入竟来
+		 		},
+		 		{
+		 			path:"/"
+		 		 	 ｒｅｄｉｒｅｃｔ:Home  //根目录　　跳转ｈｏｍｅ组件　　路由重定向
+		 		},
+		 		{
+		 			path:"/artcle/:id"
+		 		 	component:artcle
+		 		}
+		 		
+		 ]
+		
+		url  就是  router
+		
+		然后  取值   this.$router.path; 这是地址
+		
+		
+	----->
+</body>
+</html>
